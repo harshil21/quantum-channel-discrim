@@ -86,9 +86,13 @@ def find_lowest_error_prob_qubit_depolarizing_factor(lmVal):
         alpha = pic.Constant('alpha', alpha, shape=(1, 1))
         beta = pic.Constant('beta', beta, shape=(1, 1))
         psi = (alpha*ket_0) + (beta*ket_1)
+        print(psi)
         inner = p1*psi*psi.H - p2*(iMat/d)
+        print(psi*psi.H)
         trace_norm = pic.NuclearNorm(inner)
         error_p = (1 - lmVal)*0.25 + lmVal*trace_norm
+        print(error_p.value)
+        print()
         error_probs.append(error_p.value)
 
     min_error_prob = min(error_probs)
@@ -102,6 +106,6 @@ def find_lowest_error_prob_qubit_depolarizing_factor(lmVal):
     print(f"The corresponding minimum alpha value is {min_alpha}")
     print(f"The corresponding maximum alpha value is {max_alpha}")
 
-find_lowest_error_prob_qubit()  # Calculates probability for lambda=0
+# find_lowest_error_prob_qubit()  # Calculates probability for lambda=0
 print()
-find_lowest_error_prob_qubit_depolarizing_factor(0)
+find_lowest_error_prob_qubit_depolarizing_factor(0.1)

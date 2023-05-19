@@ -147,4 +147,4 @@ def run_example_2_specific_depolarizing_factor(lmVal):
 
 
 # run_example_2_specific_p(0.75)
-run_example_2_specific_depolarizing_factor(0.3)
+run_example_2_specific_depolarizing_factor(0.4)
