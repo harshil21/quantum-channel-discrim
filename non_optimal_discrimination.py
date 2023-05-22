@@ -133,5 +133,6 @@ def find_lowest_error_prob_qubit_entangled_state(d):
     trace_norm = pic.NuclearNorm(inner)
     error_p = 1/2*(1-trace_norm)
     print(f"The error probability is: {error_p.value}")
+    print(f"The theoretical error probability is: {1/(2*d**2)}")
 
 find_lowest_error_prob_qubit_entangled_state(4)
