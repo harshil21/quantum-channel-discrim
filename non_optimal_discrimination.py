@@ -107,5 +107,31 @@ def find_lowest_error_prob_qubit_depolarizing_factor(lmVal):
     print(f"The corresponding maximum alpha value is {max_alpha}")
 
 # find_lowest_error_prob_qubit()  # Calculates probability for lambda=0
-print()
-find_lowest_error_prob_qubit_depolarizing_factor(0.1)
+# print()
+# find_lowest_error_prob_qubit_depolarizing_factor(0.1)
+
+
+def find_lowest_error_prob_qubit_entangled_state(d):
+    """The dimensionality d can be changed, to get the error probability. pE = 1/2d^2"""
+    # Lets make the kets: 2 kets for 2 dimensions, 3 for 3 dimens, etc
+    kets = []  # Will contain ket0, ket1, ...
+    for i in range(d):
+        ket = np.zeros((d, 1))
+        ket[i][0] = 1
+        kets.append(ket)
+
+    iMat = pic.Constant('I', np.eye(d, dtype='complex'))
+    # Define the kets as picos constants:
+    for idx, ket in enumerate(kets):
+        kets[idx] = pic.Constant('ket_0', ket, shape=(d, 1))
+    products = []  # Contains |00>, |11>, ...
+    for ket in kets:
+        products.append(ket @ ket)
+    sum_of_kets = sum(products)
+    phi = (sum_of_kets)/np.sqrt(d)  # Calculate 1/sqrt(2)* (|00> + |11>) for d = 2
+    inner = p1*phi*phi.H - p2*((iMat @ iMat)/d**2)
+    trace_norm = pic.NuclearNorm(inner)
+    error_p = 1/2*(1-trace_norm)
+    print(f"The error probability is: {error_p.value}")
+
+find_lowest_error_prob_qubit_entangled_state(4)
