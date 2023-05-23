@@ -192,6 +192,8 @@ def find_optimal_value_of_x():
     # Case 1:
     # Let's take the case of gamma >= 1/sqrt(2), we should always get x=1 as optimal:
     eta_0, eta_1 = 0.2, 0.1 # Gives gamma of 1.97, which is greater than 1/sqrt(2) = 0.707
+    gamma = np.cos(eta_0) + np.cos(eta_1)
+    assert gamma >= 1/np.sqrt(2)
     x_vals = np.arange(0, 1.1, 0.1)
     probs = []
     for x in x_vals:
@@ -202,13 +204,16 @@ def find_optimal_value_of_x():
         # print(f"Success probability from x, eta_0 & eta_1: {amp_channel.calc_success_prob_from_etas_and_x()}")
         # print()
         probs.append(amp_channel.calc_success_prob_from_density_mat(rho1, rho2))
+    print(f"Given gamma = {gamma}, we should always get x=1 as optimal")
     print(f"Optimal value of x for gamma >= 1/sqrt(2): {x_vals[np.argmax(probs)]}")
     print(f"The corresponding maximum success probability is: {np.max(probs)}")
 
     print()
     # Case 2:
     # Let's take the case of gamma < 1/sqrt(2), optimal x = 1/(2(1-gamma^2)):
-    eta_0, eta_1 = 1.3, 1.2 # Gives gamma of 0.62, which is less than 1/sqrt(2) = 0.707
+    eta_0, eta_1 = 1.5, 1.0 # Gives gamma of 0.62, which is less than 1/sqrt(2) = 0.707
+    gamma = np.cos(eta_0) + np.cos(eta_1)
+    assert gamma < 1/np.sqrt(2)
     x_vals = np.arange(0, 1.1, 0.1)
     probs = []
     for x in x_vals:
@@ -219,10 +224,10 @@ def find_optimal_value_of_x():
         # print(f"Success probability from x, eta_0 & eta_1: {amp_channel.calc_success_prob_from_etas_and_x()}")
         # print()
         probs.append(amp_channel.calc_success_prob_from_density_mat(rho1, rho2))
+    print(f"Given gamma = {gamma}:")
     print(f"Optimal value of x for gamma < 1/sqrt(2): {x_vals[np.argmax(probs)]}")
     print(f"The corresponding maximum success probability is: {np.max(probs)}")
-    gamma = np.cos(eta_0) + np.cos(eta_1)
-    print(f"The theoretical optimal value of x for gamma < 1/sqrt(2): {1/(2*(1-gamma**2))}")
+    print(f"The theoretical optimal value of x for gamma < 1/sqrt(2): {np.round(1/(2*(1-gamma**2)), decimals=1)}")
 
 
 # find_success_prob_specific_values()
