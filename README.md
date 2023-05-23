@@ -9,3 +9,6 @@ non-optimal.
 
 - qcd_cj_matrix.py: Uses CJ matrix, and also computes the graph for different p values and probabilities.
 Adapted code from https://github.com/vsiddhu/SDP-Quantum-OR/blob/main/Notebook%203%20-%20Quantum%20Channel%20Discrimination.ipynb
+
+- discrim_amplitude_damping.py: Distinguishes two amplitude damping channels. Calculates the 
+hamiltonian, unitary matrix, and finally density matrix to get the probabilities.

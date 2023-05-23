@@ -23,7 +23,7 @@ def cj_mat(p) -> np.array:
 
 
 # Example 2. Using the dual formulation
-def find_success_prob_distinguish_deploarizing_with_identity(p):
+def find_success_prob_distinguish_depolarizing_with_identity(p):
     upsBA = cj_mat(1)
 
     thetaBA = cj_mat(p)
@@ -114,7 +114,7 @@ def plot_example_2():
         p_vals.append(p)
 
     for p in p_vals:
-        entangled_prob, non_entangled_prob = find_success_prob_distinguish_deploarizing_with_identity(p)
+        entangled_prob, non_entangled_prob = find_success_prob_distinguish_depolarizing_with_identity(p)
         entangled_probs.append(entangled_prob)
         non_entangled_probs.append(non_entangled_prob)
 
@@ -132,7 +132,7 @@ def plot_example_2():
 def run_example_2_specific_p(p):
     """p is calculated from lambda and has a range from 0 to 1"""
     print(f"For p = {p}:")
-    entangled_prob, non_entangled_prob = find_success_prob_distinguish_deploarizing_with_identity(p)
+    entangled_prob, non_entangled_prob = find_success_prob_distinguish_depolarizing_with_identity(p)
     print(f"The entangled success probability is: {entangled_prob}")
     print(f"The non-entangled success probability is: {non_entangled_prob}")
 
@@ -141,10 +141,11 @@ def run_example_2_specific_depolarizing_factor(lmVal):
     """The depolarizing factor lambda should range from -0.333 to 1"""
     print(f"For lmVal = {lmVal}:")
     p = calc_p_from_lambda(lmVal)
-    entangled_prob, non_entangled_prob = find_success_prob_distinguish_deploarizing_with_identity(p)
+    entangled_prob, non_entangled_prob = find_success_prob_distinguish_depolarizing_with_identity(p)
     print(f"The entangled success, and error probability is: {entangled_prob}, {1-entangled_prob}")
     print(f"The non-entangled success, and error probability is: {non_entangled_prob}, {1-non_entangled_prob}")
 
 
 # run_example_2_specific_p(0.75)
-run_example_2_specific_depolarizing_factor(0.4)
+run_example_2_specific_depolarizing_factor(0)
+# plot_example_2()
