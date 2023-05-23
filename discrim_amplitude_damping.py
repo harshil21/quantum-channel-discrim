@@ -51,22 +51,22 @@ original_bases = [
 
 
 class AmplitudeChannelDiscrim:
-    def __init__(self, x, eta_1, eta_2):
+    def __init__(self, x, eta_0, eta_1):
         """Initialize the class.
 
-        `eta_1` and `eta_2` are in the range [0, pi/2]. `eta_1` must be greater than `eta_2`.
+        `eta_0` and `eta_1` are in the range [0, pi/2]. `eta_0` must be greater than `eta_1`.
         
         Args:
             x (float): amplitude damping parameter, should be betweeen 0 and 1.
-            eta_1 (float): the decay probability of the first channel. Must be greater than eta_2
-            eta_2 (float): the decay probability of the second channel. Must be less than eta_1
+            eta_0 (float): the decay probability of the first channel. Must be greater than eta_1
+            eta_1 (float): the decay probability of the second channel. Must be less than eta_0
         
         """
         self.x = x
+        self.eta_0 = eta_0
         self.eta_1 = eta_1
-        self.eta_2 = eta_2
-        assert self.eta_1 > self.eta_2  # without loss of generality
-        self.gamma = np.cos(self.eta_2) + np.cos(self.eta_1)
+        assert self.eta_0 > self.eta_1  # without loss of generality
+        self.gamma = np.cos(self.eta_1) + np.cos(self.eta_0)
 
     # The hamiltonian of the system
     def hamilitonian(self, eta) -> np.array:
@@ -115,7 +115,7 @@ class AmplitudeChannelDiscrim:
         """The input state of the amplitude damping channel is given by:
         
         |psi> = sqrt(1-x)|0> + exp(-i*phi)*sqrt(x) |1>,
-        where phi = 0, x = [0, 1], eta_1 > eta_2, thus it simplifies to:
+        where phi = 0, x = [0, 1], eta_0 > eta_1, thus it simplifies to:
 
         |psi> = sqrt(1-x)|0> + sqrt(x) |1>
         """
@@ -161,45 +161,45 @@ class AmplitudeChannelDiscrim:
     def calc_success_prob_from_etas_and_x(self) -> float:
         """We can also calculate the success probability of discriminating channels by the formula:
         
-        P_success = 1/2 * {1 + (cos(eta_2) - cos(eta_1)) * sqrt(x * [1-x*(1-gamma^2)]) },
-        where gamma = cos(eta_2) + cos(eta_1)
+        P_success = 1/2 * {1 + (cos(eta_1) - cos(eta_0)) * sqrt(x * [1-x*(1-gamma^2)]) },
+        where gamma = cos(eta_1) + cos(eta_0)
 
         Ref: see formula (13) in the paper.
         """
-        P_success = 0.5 * (1 + (np.cos(self.eta_2) - np.cos(self.eta_1)) * np.sqrt(self.x * (1 - self.x * (1 - self.gamma**2))))
+        P_success = 0.5 * (1 + (np.cos(self.eta_1) - np.cos(self.eta_0)) * np.sqrt(self.x * (1 - self.x * (1 - self.gamma**2))))
         return P_success
 
     def generate_density_matrices_for_different_eta(self) -> tuple[pic.Constant, pic.Constant]:
         """Return the density matrices for two different eta values, keeping x constant"""
-        h1 = self.hamilitonian(self.eta_1)
-        h2 = self.hamilitonian(self.eta_2)
-        u1 = self.unitary(h1, self.eta_1)
-        u2 = self.unitary(h2, self.eta_2)
+        h1 = self.hamilitonian(self.eta_0)
+        h2 = self.hamilitonian(self.eta_1)
+        u1 = self.unitary(h1, self.eta_0)
+        u2 = self.unitary(h2, self.eta_1)
         psi = self.input_state()
-        rho1 = self.density_matrix(psi, u1, self.eta_1)
-        rho2 = self.density_matrix(psi, u2, self.eta_2)
+        rho1 = self.density_matrix(psi, u1, self.eta_0)
+        rho2 = self.density_matrix(psi, u2, self.eta_1)
         return rho1, rho2
 
 
 def find_success_prob_specific_values():
-    amp_channel = AmplitudeChannelDiscrim(x=0.1, eta_1=0.2, eta_2=0.1)
+    amp_channel = AmplitudeChannelDiscrim(x=0.1, eta_0=0.2, eta_1=0.1)
     rho1, rho2 = amp_channel.generate_density_matrices_for_different_eta()
     print(f"Success probability from density matrices: {amp_channel.calc_success_prob_from_density_mat(rho1, rho2)}")
-    print(f"Success probability from x, eta_1 & eta_2: {amp_channel.calc_success_prob_from_etas_and_x()}")
+    print(f"Success probability from x, eta_0 & eta_1: {amp_channel.calc_success_prob_from_etas_and_x()}")
 
 
 def find_optimal_value_of_x():
     # Case 1:
     # Let's take the case of gamma >= 1/sqrt(2), we should always get x=1 as optimal:
-    eta_1, eta_2 = 0.2, 0.1 # Gives gamma of 1.97, which is greater than 1/sqrt(2) = 0.707
+    eta_0, eta_1 = 0.2, 0.1 # Gives gamma of 1.97, which is greater than 1/sqrt(2) = 0.707
     x_vals = np.arange(0, 1.1, 0.1)
     probs = []
     for x in x_vals:
-        amp_channel = AmplitudeChannelDiscrim(x=x, eta_1=eta_1, eta_2=eta_2)
+        amp_channel = AmplitudeChannelDiscrim(x=x, eta_0=eta_0, eta_1=eta_1)
         rho1, rho2 = amp_channel.generate_density_matrices_for_different_eta()
         # print(x)
         # print(f"Success probability from density matrices: {amp_channel.calc_success_prob_from_density_mat(rho1, rho2)}")
-        # print(f"Success probability from x, eta_1 & eta_2: {amp_channel.calc_success_prob_from_etas_and_x()}")
+        # print(f"Success probability from x, eta_0 & eta_1: {amp_channel.calc_success_prob_from_etas_and_x()}")
         # print()
         probs.append(amp_channel.calc_success_prob_from_density_mat(rho1, rho2))
     print(f"Optimal value of x for gamma >= 1/sqrt(2): {x_vals[np.argmax(probs)]}")
@@ -208,20 +208,20 @@ def find_optimal_value_of_x():
     print()
     # Case 2:
     # Let's take the case of gamma < 1/sqrt(2), optimal x = 1/(2(1-gamma^2)):
-    eta_1, eta_2 = 1.3, 1.2 # Gives gamma of 0.62, which is less than 1/sqrt(2) = 0.707
+    eta_0, eta_1 = 1.3, 1.2 # Gives gamma of 0.62, which is less than 1/sqrt(2) = 0.707
     x_vals = np.arange(0, 1.1, 0.1)
     probs = []
     for x in x_vals:
-        amp_channel = AmplitudeChannelDiscrim(x=x, eta_1=eta_1, eta_2=eta_2)
+        amp_channel = AmplitudeChannelDiscrim(x=x, eta_0=eta_0, eta_1=eta_1)
         rho1, rho2 = amp_channel.generate_density_matrices_for_different_eta()
         # print(x)
         # print(f"Success probability from density matrices: {amp_channel.calc_success_prob_from_density_mat(rho1, rho2)}")
-        # print(f"Success probability from x, eta_1 & eta_2: {amp_channel.calc_success_prob_from_etas_and_x()}")
+        # print(f"Success probability from x, eta_0 & eta_1: {amp_channel.calc_success_prob_from_etas_and_x()}")
         # print()
         probs.append(amp_channel.calc_success_prob_from_density_mat(rho1, rho2))
     print(f"Optimal value of x for gamma < 1/sqrt(2): {x_vals[np.argmax(probs)]}")
     print(f"The corresponding maximum success probability is: {np.max(probs)}")
-    gamma = np.cos(eta_1) + np.cos(eta_2)
+    gamma = np.cos(eta_0) + np.cos(eta_1)
     print(f"The theoretical optimal value of x for gamma < 1/sqrt(2): {1/(2*(1-gamma**2))}")
 
 
