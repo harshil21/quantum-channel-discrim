@@ -6,6 +6,8 @@ Discriminating qubit amplitude damping channels by M.Rexiti, Stefano Mancini
 import itertools
 import numpy as np
 import picos as pic
+import matplotlib
+import matplotlib.pyplot as plt
 
 
 def gen_ket(n):
@@ -65,7 +67,7 @@ class AmplitudeChannelDiscrim:
         self.x = x
         self.eta_0 = eta_0
         self.eta_1 = eta_1
-        assert self.eta_0 > self.eta_1  # without loss of generality
+        # assert self.eta_0 > self.eta_1 or self.eta_1 > self.eta_0  # without loss of generality
         self.gamma = np.cos(self.eta_1) + np.cos(self.eta_0)
 
     # The hamiltonian of the system
@@ -166,7 +168,9 @@ class AmplitudeChannelDiscrim:
 
         Ref: see formula (13) in the paper.
         """
-        P_success = 0.5 * (1 + (np.cos(self.eta_1) - np.cos(self.eta_0)) * np.sqrt(self.x * (1 - self.x * (1 - self.gamma**2))))
+        larger = max(self.eta_0, self.eta_1)
+        smaller = min(self.eta_0, self.eta_1)
+        P_success = 0.5 * (1 + (np.cos(smaller) - np.cos(larger)) * np.sqrt(self.x * (1 - self.x * (1 - self.gamma**2))))
         return P_success
 
     def generate_density_matrices_for_different_eta(self) -> tuple[pic.Constant, pic.Constant]:
@@ -181,11 +185,12 @@ class AmplitudeChannelDiscrim:
         return rho1, rho2
 
 
-def find_success_prob_specific_values():
-    amp_channel = AmplitudeChannelDiscrim(x=0.1, eta_0=0.2, eta_1=0.1)
+def find_success_prob_specific_values(x, eta_0, eta_1):
+    amp_channel = AmplitudeChannelDiscrim(x=x, eta_0=eta_0, eta_1=eta_1)
     rho1, rho2 = amp_channel.generate_density_matrices_for_different_eta()
     print(f"Success probability from density matrices: {amp_channel.calc_success_prob_from_density_mat(rho1, rho2)}")
     print(f"Success probability from x, eta_0 & eta_1: {amp_channel.calc_success_prob_from_etas_and_x()}")
+    print(f"Error prob: {1 - amp_channel.calc_success_prob_from_etas_and_x()}")
 
 
 def find_optimal_value_of_x():
@@ -230,5 +235,59 @@ def find_optimal_value_of_x():
     print(f"The theoretical optimal value of x for gamma < 1/sqrt(2): {np.round(1/(2*(1-gamma**2)), decimals=1)}")
 
 
-# find_success_prob_specific_values()
-find_optimal_value_of_x()
+def contour_plot_vary_etas():
+    range_of_etas = np.arange(0, 1.6, 0.1)
+
+    for x in (0.25, 0.5, 0.75, 1):
+        error_probs = []
+        for eta in itertools.product(range_of_etas, range_of_etas):
+            eta_0, eta_1 = eta
+            amp_channel = AmplitudeChannelDiscrim(x=x, eta_0=eta_0, eta_1=eta_1)
+            success_prob = amp_channel.calc_success_prob_from_etas_and_x()
+            error_prob = 1 - success_prob
+            error_probs.append(error_prob)
+
+        error_probs = np.array([error_probs])
+        error_probs = error_probs.reshape(len(range_of_etas), len(range_of_etas))
+        eta_list = list(range_of_etas)
+        cs = plt.contourf(eta_list, eta_list, error_probs)
+        l = [f'{a:.2f}' for a in cs.levels]
+        proxy = [plt.Rectangle((1, 1), 2, 2, fc=pc.get_facecolor()[0]) for pc in
+                cs.collections]
+        plt.legend(proxy, l)
+        plt.xlabel("n0")
+        plt.ylabel("n1")
+        plt.title(f"Error probabilities for {x=}")
+        plt.savefig(f"contour_{x=}.png")
+
+
+def contour_plot_vary_x_and_eta_1():
+    range_of_eta_1 = np.linspace(1.4, 3.1415/2, 30)
+    x_vals = np.linspace(0, 1, 30)
+
+    eta_0 = 1.1
+    error_probs = []
+    for x, eta_1 in itertools.product(x_vals, range_of_eta_1):
+        amp_channel = AmplitudeChannelDiscrim(x=x, eta_0=eta_0, eta_1=eta_1)
+        success_prob = amp_channel.calc_success_prob_from_etas_and_x()
+        error_prob = 1 - success_prob
+        error_probs.append(error_prob)
+
+    error_probs = np.array([error_probs])
+    error_probs = error_probs.reshape(len(range_of_eta_1), len(x_vals))
+    x_list = list(x_vals)
+    eta_1_list = list(range_of_eta_1)
+    cs = plt.contourf(x_list, eta_1_list, error_probs.T)
+    l = [f'{a:.2f}' for a in cs.levels]
+    proxy = [plt.Rectangle((1, 1), 2, 2, fc=pc.get_facecolor()[0]) for pc in
+            cs.collections]
+    plt.legend(proxy, l)
+    plt.xlabel("x")
+    plt.ylabel("n1")
+    plt.title(f"Error probabilities for {eta_0=}")
+    plt.savefig(f"Error probs with {eta_0=}.png")
+
+# find_success_prob_specific_values(x=0.3, eta_0=1.1, eta_1=1.40)
+# contour_plot_vary_etas()
+contour_plot_vary_x_and_eta_1()
+# find_optimal_value_of_x()
