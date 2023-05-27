@@ -1,6 +1,6 @@
-### Quantum state and channel discrimination
+### Quantum channel discrimination
 
-This is a WIP, the code and this README is still incomplete/not optimal. 
+**Goal**: To find optimal input state in order to discrimate amplitude damping and pauli channels with maximum success.
 
 Files:
 - non_optimal_discrimination.py: Distinguishes depolarizing channel from identity for a qubit and 
@@ -17,6 +17,22 @@ from: https://arxiv.org/abs/2009.01000
 - discrim_pauli_channels.py: Distinguishes two pauli channels, using a non-entangled state.
     Formulas and theory from: https://arxiv.org/pdf/quant-ph/0506072.pdf (see Section IV)
 
+### Results
+
+1. For Amplitude Damping Channel, there are 2 cases for achieving the optimal input state:
+
+Case 1: γ >= 1/√2: We always obtain x=1 as the optimal input state (with lowest error probability). This can be easily seen from the contour plots below:
+
+<img src="contour_x=0.25.png" width="512"/>
+<img src="contour_x=1.png" width="512"/>
+
+Case 2: γ < 1/√2: The optimal input state x ranges from 0.6 - 0.8. An example of a plot between x and η₁ with η₀ = 1.1 constant is given below:
+
+<img src="Error probs with eta_0=1.1.png" width="512"/>
+
+2. For Pauli Channels, we obtain two optimal input states, at π/2 and 3π/2, which give the lowest error probabilities. This is seen in the plot below:
+
+<img src="error_probability_pauli_channel.png" width="512"/>
 
 ### Credits
 
