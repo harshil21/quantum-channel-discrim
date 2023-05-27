@@ -1,0 +1,3 @@
+picos
+numpy
+matplotlib
