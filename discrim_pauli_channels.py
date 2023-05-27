@@ -130,7 +130,7 @@ def plot_error_probability():
     plt.title("Probabilites associated with discrimination of two Pauli channels\n(non-entangled)")
     plt.xlabel(f"\u03B8 (deg)")  # theta symbol
     plt.ylabel("Error Probability")
-    plt.savefig("error_probability_pauli_channel.png")
+    plt.savefig("plots/error_probability_pauli_channel.png")
     plt.show()
 
 

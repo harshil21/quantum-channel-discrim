@@ -255,7 +255,7 @@ def contour_plot_vary_etas():
         plt.xlabel("n0")
         plt.ylabel("n1")
         plt.title(f"Error probabilities for {x=}")
-        plt.savefig(f"contour_{x=}.png")
+        plt.savefig(f"plots/contour_{x=}.png")
 
 
 def contour_plot_vary_x_and_eta_1():
@@ -282,7 +282,7 @@ def contour_plot_vary_x_and_eta_1():
     plt.xlabel("x")
     plt.ylabel("n1")
     plt.title(f"Error probabilities for {eta_0=}")
-    plt.savefig(f"Error probs with {eta_0=}.png")
+    plt.savefig(f"plots/Error probs with {eta_0=}.png")
 
 # find_success_prob_specific_values(x=0.3, eta_0=1.1, eta_1=1.40)
 # contour_plot_vary_etas()
