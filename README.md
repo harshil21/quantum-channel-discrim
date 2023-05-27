@@ -14,6 +14,9 @@ Adapted code from https://github.com/vsiddhu/SDP-Quantum-OR/blob/main/Notebook%2
 hamiltonian, unitary matrix, and finally density matrix to get the probabilities. Formulas and theory
 from: https://arxiv.org/abs/2009.01000
 
+- discrim_pauli_channels.py: Distinguishes two pauli channels, using a non-entangled state.
+    Formulas and theory from: https://arxiv.org/pdf/quant-ph/0506072.pdf (see Section IV)
+
 
 ### Credits
 
