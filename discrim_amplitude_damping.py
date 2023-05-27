@@ -40,7 +40,7 @@ def ladder_a(n):
     """
     if n == 0:
         return pic.Constant(np.array([[0]] * 4))
-    return pic.Constant(np.sqrt(n) * gen_ket(n-1))
+    return pic.Constant(np.sqrt(n-1) * gen_ket(n-1))
 
 ladder_b = ladder_a
 
@@ -224,11 +224,8 @@ def find_optimal_value_of_x():
     for x in x_vals:
         amp_channel = AmplitudeChannelDiscrim(x=x, eta_0=eta_0, eta_1=eta_1)
         rho1, rho2 = amp_channel.generate_density_matrices_for_different_eta()
-        # print(x)
-        # print(f"Success probability from density matrices: {amp_channel.calc_success_prob_from_density_mat(rho1, rho2)}")
-        # print(f"Success probability from x, eta_0 & eta_1: {amp_channel.calc_success_prob_from_etas_and_x()}")
-        # print()
         probs.append(amp_channel.calc_success_prob_from_density_mat(rho1, rho2))
+
     print(f"Given gamma = {gamma}:")
     print(f"Optimal value of x for gamma < 1/sqrt(2): {x_vals[np.argmax(probs)]}")
     print(f"The corresponding maximum success probability is: {np.max(probs)}")
@@ -289,5 +286,5 @@ def contour_plot_vary_x_and_eta_1():
 
 # find_success_prob_specific_values(x=0.3, eta_0=1.1, eta_1=1.40)
 # contour_plot_vary_etas()
-contour_plot_vary_x_and_eta_1()
-# find_optimal_value_of_x()
+# contour_plot_vary_x_and_eta_1()
+find_optimal_value_of_x()
