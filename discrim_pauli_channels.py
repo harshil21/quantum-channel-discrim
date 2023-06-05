@@ -91,7 +91,13 @@ def find_error_probability(theta):
     """
 
     # Define input state |psi>
-    psi = pic.Constant(np.cos(theta / 2) * ket_0 + np.sin(theta / 2) * ket_1)
+    psi = pic.Constant(
+        [
+            [(1-theta) ** 0.5],
+            [(theta) ** 0.5],
+        ],
+        shape=(2, 1)
+    )
 
     inner = 0
     # Sum over the 4 pauli matrices
@@ -121,14 +127,14 @@ def plot_error_probability():
     p1=p2=1/2. Uses a non-entangled input state.
     """
 
-    theta = np.arange(0, 2*np.pi, 0.05)
-    error_p = [find_error_probability(i) for i in theta]
+    x = np.arange(0, 1.05, 0.05)
+    error_p = [find_error_probability(i) for i in x]
 
-    plt.plot(theta, error_p)
+    plt.plot(x, error_p)
     # Change x axis to degrees
-    plt.xticks(np.arange(0, 2*np.pi+0.1, np.pi/2), [f"{i:.0f}" for i in np.arange(0, 361, 90)])
+    # plt.xticks(np.arange(0, 2*np.pi+0.1, np.pi/2), [f"{i:.0f}" for i in np.arange(0, 361, 90)])
     plt.title("Probabilites associated with discrimination of two Pauli channels\n(non-entangled)")
-    plt.xlabel(f"\u03B8 (deg)")  # theta symbol
+    plt.xlabel(f"x")  # theta symbol
     plt.ylabel("Error Probability")
     plt.savefig("plots/error_probability_pauli_channel.png")
     plt.show()
